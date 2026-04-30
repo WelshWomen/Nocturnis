@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Nocturnis 🦇</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:ital,wght@0,300;0,400;1,300&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg:    #09060b;
+  --bg2:   #110d14;
+  --bg3:   #1a1020;
+  --card:  #130e16;
+  --b1:    #2a1835;
+  --b2:    #3d2550;
+  --red:   #8b1a2e;
+  --red2:  #c0392b;
+  --red3:  #e05555;
+  --gold:  #c9a84c;
+  --gold2: #f0c96a;
+  --tx:    #ede0f0;
+  --tx2:   #9a7aaa;
+  --tx3:   #5a3a6a;
+  --ok:    #1e6b45;
+  --ok2:   #3dbf75;
+  --fd:    'Cinzel', serif;
+  --fb:    'Lato', sans-serif;
+}
+
+html, body {
+  height: 100%; background: var(--bg);
+  font-family: var(--fb); color: var(--tx);
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  max-width: 430px; margin: 0 auto;
+  min-height: 100vh; min-height: 100dvh;
+  display: flex; flex-direction: column;
+  position: relative; overflow-x: hidden;
+}
+
+/* ── SCREENS ── */
+.scr { flex: 1; display: none; flex-direction: column; }
+.scr.on { display: flex; }
+
+/* ══════════════════════════════
+   HOME
+══════════════════════════════ */
+#home { padding: 32px 22px 40px; }
+
+.logo {
+  text-align: center; margin-bottom: 32px;
+  font-family: var(--fd); letter-spacing: 5px;
+  font-size: 11px; color: var(--tx3); text-transform: uppercase;
+}
+.logo span { color: var(--red3); }
+
+/* streak block */
+.streak-block {
+  background: var(--card); border: 1px solid var(--b2);
+  border-radius: 16px; padding: 20px 22px; margin-bottom: 14px;
+  position: relative; overflow: hidden;
+}
+.streak-block::after {
+  content: ''; position: absolute;
+  top: -30px; right: -30px; width: 120px; height: 120px;
+  border-radius: 50%; background: rgba(139,26,46,.12);
+  pointer-events: none;
+}
+.streak-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.streak-n { font-family: var(--fd); font-size: 56px; color: var(--tx); line-height: 1; }
+.streak-meta { text-align: right; }
+.streak-fire { font-size: 9px; color: var(--tx3); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 3px; }
+.streak-rank { font-family: var(--fd); font-size: 13px; color: var(--red3); }
+.streak-rec  { font-size: 10px; color: var(--tx3); margin-top: 2px; }
+
+/* 7-day dots */
+.week { display: flex; gap: 5px; }
+.wdot {
+  flex: 1; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; transition: all .3s;
+}
+.wdot.ok    { background: var(--ok); color: #a0f0c0; }
+.wdot.today { background: var(--red); color: #fff; border: 1px solid var(--red3); }
+.wdot.empty { background: var(--bg3); color: var(--tx3); border: 1px solid var(--b1); }
+
+/* quote */
+.quote {
+  border-left: 2px solid var(--red); margin-bottom: 20px;
+  padding: 10px 14px; font-size: 12px; color: var(--tx2);
+  font-style: italic; line-height: 1.75;
+  background: var(--bg3); border-radius: 0 8px 8px 0;
+}
+
+/* routine buttons */
+.rbtns { display: flex; flex-direction: column; gap: 11px; }
+.rbtn {
+  background: var(--card); border: 1px solid var(--b1);
+  border-radius: 14px; padding: 17px 18px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; transition: all .2s;
+  text-align: left; width: 100%;
+}
+.rbtn.next   { border-color: var(--red2); }
+.rbtn.done   { border-color: var(--ok); opacity: .6; pointer-events: none; }
+.rbtn:not(.done):active { transform: scale(.97); background: var(--bg3); }
+
+.rbtn-icon { font-size: 24px; flex-shrink: 0; width: 44px; height: 44px;
+  border-radius: 50%; background: var(--bg3); border: 1px solid var(--b2);
+  display: flex; align-items: center; justify-content: center; }
+.rbtn.next .rbtn-icon { background: rgba(139,26,46,.12); border-color: var(--red); }
+.rbtn.done .rbtn-icon { background: rgba(30,107,69,.15); border-color: var(--ok); }
+
+.rbtn-body { flex: 1; }
+.rbtn-name { font-size: 15px; font-weight: 400; margin-bottom: 2px; }
+.rbtn-sub  { font-size: 11px; color: var(--tx3); }
+
+.rbtn-badge {
+  font-size: 10px; padding: 4px 10px; border-radius: 20px;
+  flex-shrink: 0; white-space: nowrap;
+}
+.badge-next { background: rgba(139,26,46,.15); color: var(--red3); }
+.badge-wait { background: var(--bg3); color: var(--tx3); }
+.badge-done { background: rgba(30,107,69,.2); color: var(--ok2); }
+
+/* ══════════════════════════════
+   ROUTINE
+══════════════════════════════ */
+#routine { position: relative; overflow: hidden; }
+
+.r-header {
+  background: var(--bg2); border-bottom: 1px solid var(--b1);
+  padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+}
+.r-back {
+  background: none; border: 1px solid var(--b2); border-radius: 8px;
+  width: 38px; height: 38px; color: var(--tx2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0; transition: background .2s;
+}
+.r-back:active { background: var(--bg3); }
+.r-title { font-family: var(--fd); font-size: 13px; letter-spacing: 2px; text-transform: uppercase; }
+.r-info  { font-size: 10px; color: var(--tx3); margin-top: 2px; }
+
+/* progress bar */
+.r-prog { padding: 12px 18px 0; flex-shrink: 0; }
+.r-pdots { display: flex; gap: 4px; margin-bottom: 6px; }
+.pd { flex: 1; height: 3px; border-radius: 2px; background: var(--b1); transition: background .4s; }
+.pd-done { background: var(--ok2); }
+.pd-skip { background: var(--tx3); }
+.pd-cur  { background: var(--red3); animation: blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.r-plabel { font-size: 10px; color: var(--tx3); }
+
+/* main area */
+.r-body {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 18px 22px 16px; overflow: hidden;
+}
+
+/* timer ring */
+.t-wrap { position: relative; margin-bottom: 18px; }
+.t-svg  { transform: rotate(-90deg); display: block; }
+.t-bg   { fill: none; stroke: var(--b2); stroke-width: 8; }
+.t-fg   { fill: none; stroke: var(--red3); stroke-width: 8; stroke-linecap: round;
+          transition: stroke-dashoffset 1s linear; }
+.t-fg.ok { stroke: var(--ok2); }
+.t-center {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%); text-align: center; pointer-events: none;
+}
+.t-num  { font-family: var(--fd); font-size: 44px; color: var(--tx); line-height: 1; }
+.t-unit { font-size: 9px; color: var(--tx3); text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; }
+
+/* manual tap */
+.manual {
+  width: 78px; height: 78px; border-radius: 50%;
+  border: 2px dashed var(--b2); background: var(--bg3);
+  display: none; align-items: center; justify-content: center;
+  font-size: 34px; margin-bottom: 18px; cursor: pointer; transition: all .3s;
+}
+.manual.ck { border: 2px solid var(--ok2); background: rgba(30,107,69,.18); }
+
+/* quad grid */
+.quads {
+  display: none; grid-template-columns: 1fr 1fr;
+  gap: 7px; width: 100%; max-width: 226px; margin-bottom: 16px;
+}
+.q {
+  background: var(--bg3); border: 1px solid var(--b1);
+  border-radius: 8px; padding: 10px 8px; text-align: center; transition: all .3s;
+}
+.q.qa { background: rgba(139,26,46,.18); border-color: var(--red2); }
+.q.qd { background: rgba(30,107,69,.18); border-color: var(--ok); }
+.q-label { font-size: 9px; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
+.q-time  { font-family: var(--fd); font-size: 15px; color: var(--tx2); }
+.q.qa .q-time { color: var(--red3); }
+.q.qd .q-time { color: var(--ok2); }
+
+.s-title { font-family: var(--fd); font-size: 16px; text-align: center; letter-spacing: 1px; margin-bottom: 7px; }
+.s-desc  { font-size: 12px; color: var(--tx2); text-align: center; line-height: 1.75; max-width: 260px; margin-bottom: 18px; }
+
+/* actions */
+.r-acts { display: flex; gap: 10px; width: 100%; }
+.btn-skip {
+  flex: 1; background: none; border: 1px solid var(--b2);
+  border-radius: 10px; padding: 14px; color: var(--tx3);
+  font-family: var(--fb); font-size: 12px; cursor: pointer; transition: all .2s;
+}
+.btn-skip:active { color: var(--tx); border-color: var(--tx3); }
+.btn-main {
+  flex: 2; background: var(--red); border: none;
+  border-radius: 10px; padding: 14px; color: #fff;
+  font-family: var(--fd); font-size: 11px; letter-spacing: 2px;
+  cursor: pointer; text-transform: uppercase; transition: all .2s;
+}
+.btn-main:active { transform: scale(.97); }
+.btn-main.ready  { background: var(--ok); }
+
+/* pause overlay */
+.pause-ov {
+  position: absolute; inset: 0; background: rgba(9,6,11,.95);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center; gap: 18px; z-index: 50;
+}
+.pause-ov.on { display: flex; }
+.pause-title { font-family: var(--fd); font-size: 20px; letter-spacing: 2px; }
+.pause-resume {
+  background: var(--red); border: none; border-radius: 12px;
+  padding: 14px 32px; color: #fff; font-family: var(--fd);
+  font-size: 12px; letter-spacing: 2px; cursor: pointer; text-transform: uppercase;
+}
+.pause-quit {
+  background: none; border: 1px solid var(--b2); border-radius: 12px;
+  padding: 12px 28px; color: var(--tx3); font-family: var(--fb);
+  font-size: 12px; cursor: pointer;
+}
+
+/* ══════════════════════════════
+   FINISH
+══════════════════════════════ */
+#finish {
+  align-items: center; justify-content: center;
+  padding: 32px 24px; text-align: center;
+}
+.f-icon  { font-size: 64px; margin-bottom: 14px; animation: pop .5s cubic-bezier(.34,1.56,.64,1); }
+@keyframes pop { from{transform:scale(.4);opacity:0} to{transform:scale(1);opacity:1} }
+.f-title { font-family: var(--fd); font-size: 20px; color: var(--red3); letter-spacing: 2px; margin-bottom: 6px; }
+.f-quote { font-size: 12px; color: var(--tx2); font-style: italic; line-height: 1.75; max-width: 280px; margin: 0 auto 22px; }
+.f-pts {
+  background: var(--card); border: 1px solid var(--red);
+  border-radius: 12px; padding: 16px 28px; margin-bottom: 14px; width: 100%;
+}
+.f-pts-label { font-size: 9px; color: var(--tx3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+.f-pts-val   { font-family: var(--fd); font-size: 36px; color: var(--gold2); }
+.f-series {
+  background: var(--card); border: 1px solid var(--b1);
+  border-radius: 12px; padding: 14px; margin-bottom: 22px; width: 100%;
+}
+.f-series-label { font-size: 9px; color: var(--tx3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+.f-dots { display: flex; gap: 5px; justify-content: center; margin-bottom: 8px; flex-wrap: wrap; }
+.f-dot {
+  width: 26px; height: 26px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; font-size: 10px;
+}
+.f-dot.ok    { background: var(--ok); color: #a0f0c0; }
+.f-dot.today { background: var(--red); color: #fff; border: 1px solid var(--red3); }
+.f-streak { font-family: var(--fd); font-size: 14px; color: var(--gold); }
+.f-home {
+  width: 100%; background: var(--red); border: none; border-radius: 12px;
+  padding: 16px; color: #fff; font-family: var(--fd); font-size: 12px;
+  letter-spacing: 3px; cursor: pointer; text-transform: uppercase;
+}
+.f-home:active { background: var(--red2); }
+
+/* ══════════════════════════════
+   MILESTONE MODAL
+══════════════════════════════ */
+.modal-ov {
+  position: fixed; inset: 0; background: rgba(9,6,11,.92);
+  display: none; align-items: center; justify-content: center;
+  z-index: 300; padding: 24px;
+}
+.modal-ov.on { display: flex; }
+.modal-box {
+  background: var(--bg2); border: 1px solid var(--red);
+  border-radius: 16px; padding: 28px 22px; text-align: center;
+  max-width: 300px; width: 100%;
+  animation: pop .4s cubic-bezier(.34,1.56,.64,1);
+}
+.m-icon  { font-size: 50px; margin-bottom: 12px; }
+.m-title { font-family: var(--fd); font-size: 17px; color: var(--gold2); letter-spacing: 2px; margin-bottom: 7px; }
+.m-msg   { font-size: 12px; color: var(--tx2); line-height: 1.7; margin-bottom: 18px; }
+.m-close {
+  background: var(--red); border: none; border-radius: 10px;
+  padding: 12px 28px; color: #fff; font-family: var(--fd);
+  font-size: 11px; letter-spacing: 2px; cursor: pointer; text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ HOME ══ -->
+<div id="home" class="scr on">
+  <div class="logo">&#x1F987; <span>Nocturnis</span></div>
+
+  <div class="streak-block">
+    <div class="streak-top">
+      <div class="streak-n" id="h-streak">0</div>
+      <div class="streak-meta">
+        <div class="streak-fire">&#x1F525; serie</div>
+        <div class="streak-rank" id="h-rank">Novice</div>
+        <div class="streak-rec"  id="h-rec">Record : 0</div>
+      </div>
+    </div>
+    <div class="week" id="h-week"></div>
+  </div>
+
+  <div class="quote" id="h-quote"></div>
+
+  <div class="rbtns">
+    <button class="rbtn next" id="ri-m" onclick="clickM()">
+      <div class="rbtn-icon">&#x1F305;</div>
+      <div class="rbtn-body">
+        <div class="rbtn-name">Routine du matin</div>
+        <div class="rbtn-sub">6 &#xe9;tapes &middot; ~4 min</div>
+      </div>
+      <div class="rbtn-badge badge-next" id="badge-m">D&#xe9;marrer</div>
+    </button>
+    <button class="rbtn" id="ri-e" onclick="clickE()">
+      <div class="rbtn-icon">&#x1F319;</div>
+      <div class="rbtn-body">
+        <div class="rbtn-name">Routine du soir</div>
+        <div class="rbtn-sub">6 &#xe9;tapes &middot; ~4 min</div>
+      </div>
+      <div class="rbtn-badge badge-wait" id="badge-e">En attente</div>
+    </button>
+  </div>
+</div>
+
+<!-- ══ ROUTINE ══ -->
+<div id="routine" class="scr">
+  <div class="r-header">
+    <button class="r-back" onclick="confirmQuit()">&#8592;</button>
+    <div style="flex:1">
+      <div class="r-title" id="r-title">Routine</div>
+      <div class="r-info"  id="r-info">&#xc9;tape 1 / 7</div>
+    </div>
+    <button class="r-back" onclick="togglePause()">&#9646;&#9646;</button>
+  </div>
+
+  <div class="r-prog">
+    <div class="r-pdots" id="r-pdots"></div>
+    <div class="r-plabel" id="r-plabel"></div>
+  </div>
+
+  <div class="r-body">
+    <div class="t-wrap" id="t-wrap">
+      <svg class="t-svg" width="158" height="158" viewBox="0 0 158 158">
+        <circle class="t-bg" cx="79" cy="79" r="67"/>
+        <circle class="t-fg" id="t-fg" cx="79" cy="79" r="67"
+                stroke-dasharray="421" stroke-dashoffset="0"/>
+      </svg>
+      <div class="t-center">
+        <div class="t-num"  id="t-num">0</div>
+        <div class="t-unit">secondes</div>
+      </div>
+    </div>
+
+    <div class="manual" id="manual" onclick="tapManual()">&#x1FA77;</div>
+
+    <div class="quads" id="quads" style="max-width:220px">
+      <div class="q" id="q0"><div class="q-label">Machoire haute</div><div class="q-time">60s</div></div>
+      <div class="q" id="q1"><div class="q-label">Machoire basse</div><div class="q-time">60s</div></div>
+    </div>
+
+    <div class="s-title" id="s-title"></div>
+    <div class="s-desc"  id="s-desc"></div>
+
+    <div class="r-acts">
+      <button class="btn-skip" onclick="doSkip()">Passer</button>
+      <button class="btn-main" id="btn-main" onclick="doNext()">Marquer termin&#xe9;</button>
+    </div>
+  </div>
+
+  <div class="pause-ov" id="pause-ov">
+    <div style="font-size:38px">&#9646;&#9646;</div>
+    <div class="pause-title">Pause&hellip;</div>
+    <button class="pause-resume" onclick="togglePause()">Reprendre</button>
+    <button class="pause-quit"   onclick="confirmQuit()">Abandonner</button>
+  </div>
+</div>
+
+<!-- ══ FINISH ══ -->
+<div id="finish" class="scr">
+  <div class="f-icon"  id="f-icon">&#x1F9DB;</div>
+  <div class="f-title">Rituel accompli !</div>
+  <div class="f-quote" id="f-quote"></div>
+  <div class="f-pts">
+    <div class="f-pts-label">Points gagn&#xe9;s</div>
+    <div class="f-pts-val" id="f-pts">+0</div>
+  </div>
+  <div class="f-series">
+    <div class="f-series-label">S&#xe9;rie en cours</div>
+    <div class="f-dots"   id="f-dots"></div>
+    <div class="f-streak" id="f-streak"></div>
+  </div>
+  <button class="f-home" onclick="goHome()">Retour au manoir</button>
+</div>
+
+<!-- ══ MODAL ══ -->
+<div class="modal-ov" id="modal-ov">
+  <div class="modal-box">
+    <div class="m-icon"  id="m-icon">&#x1F3C6;</div>
+    <div class="m-title" id="m-title"></div>
+    <div class="m-msg"   id="m-msg"></div>
+    <button class="m-close" onclick="closeMod()">Glorieux !</button>
+  </div>
+</div>
+
+<script>
+// ── STEPS ────────────────────────────────────────────
+var STEPS = [
+  { name:"Rincage eau tiede",
+    desc:"Rincez a l'eau tiede 15 a 20 secondes. Le prelude indispensable a tout rituel.",
+    dur:20, manual:false, quad:false, pts:5 },
+
+  { name:"Fil dentaire",
+    desc:"Passez le fil dentaire entre chaque dent, en epousant la forme de la dent. Minutieux et impitoyable.",
+    dur:0, manual:true, quad:false, pts:8 },
+
+  { name:"Brossette interdentaire",
+    desc:"Passez la brossette entre chaque dent. Completez le nettoyage la ou le fil ne suffit pas.",
+    dur:0, manual:true, quad:false, pts:8 },
+
+  { name:"Brossage - Machoire haute",
+    desc:"Toutes les dents du haut, 60 secondes. Mouvements circulaires doux, 45 degres vers la gencive. Faces externe, interne et occlusale.",
+    dur:60, manual:false, quad:true, qi:0, pts:8 },
+
+  { name:"Brossage - Machoire basse",
+    desc:"Toutes les dents du bas, 60 secondes. N'oubliez pas les faces internes et la langue.",
+    dur:60, manual:false, quad:true, qi:1, pts:8 },
+
+  { name:"Bain de bouche",
+    desc:"Rincez 20 a 30 secondes. Le sceau final qui protege vos crocs jusqu'au prochain rituel.",
+    dur:25, manual:false, quad:false, pts:5 }
+];
+
+var RANKS = [
+  { min:0,    l:"Novice",           e:"\uD83E\uDDDB" },
+  { min:100,  l:"Initie",           e:"\uD83E\uDD87" },
+  { min:300,  l:"Vampire",          e:"\uD83E\uDDDB" },
+  { min:700,  l:"Comte des Crocs",  e:"\uD83C\uDFF0" },
+  { min:1500, l:"Seigneur",         e:"\uD83D\uDC51" },
+  { min:3000, l:"Prince Nocturne",  e:"\u2764\uFE0F" },
+  { min:6000, l:"Roi des Tenebres", e:"\uD83C\uDF11" }
+];
+
+var QM = [
+  "L'aube se leve. Tes crocs doivent briller avant de regagner l'ombre.",
+  "Chaque aurore est une chance de parfaire ton arsenal dentaire.",
+  "La nuit recule, mais ta discipline, elle, ne faiblira jamais."
+];
+var QE = [
+  "La nuit tombe. Tes crocs meritent leur rituel vesperale.",
+  "Sous le clair de lune, chaque brossage est un acte de pouvoir.",
+  "Les ombres s'allongent. Il est l'heure d'affuter tes armes."
+];
+var QD = [
+  "Matin et soir maitrise. La serie continue, implacable.",
+  "Tes crocs sont des legendes. Continue ainsi, Seigneur."
+];
+var MILES = [3, 7, 14, 30, 60, 100];
+var CIRC  = 2 * Math.PI * 67; // 421
+
+// ── STORAGE ──────────────────────────────────────────
+function lsGet(k, d) {
+  try { var v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : d; }
+  catch(e) { return d; }
+}
+function lsSet(k, v) {
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {}
+}
+
+var S = lsGet("noc5", { xp:0, best:0, streak:0, days:{}, miles:[] });
+function save() { lsSet("noc5", S); }
+
+function today() { return new Date().toISOString().slice(0,10); }
+function getDay(k) { return S.days[k] || { m:false, e:false, score:0, ok:false }; }
+function setDay(k, d) { S.days[k] = d; save(); }
+
+function getRank(xp) {
+  var r = RANKS[0];
+  for (var i = 0; i < RANKS.length; i++) { if (xp >= RANKS[i].min) r = RANKS[i]; }
+  return r;
+}
+
+function recalcStreak() {
+  var s = 0;
+  var d = new Date(today());
+  for (var i = 0; i < 9999; i++) {
+    var k = d.toISOString().slice(0,10);
+    if (S.days[k] && S.days[k].ok) { s++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  S.streak = s;
+  if (s > S.best) S.best = s;
+}
+
+// ── SCREEN MANAGER ───────────────────────────────────
+function show(id) {
+  ["home","routine","finish"].forEach(function(x) {
+    document.getElementById(x).classList.toggle("on", x === id);
+  });
+  if (id === "home") refreshHome();
+}
+
+// ── HOME ─────────────────────────────────────────────
+function refreshHome() {
+  recalcStreak();
+  document.getElementById("h-streak").textContent = S.streak;
+  var r = getRank(S.xp);
+  document.getElementById("h-rank").textContent = r.l;
+  document.getElementById("h-rec").textContent  = "Record : " + S.best;
+
+  // Week dots
+  var weekEl = document.getElementById("h-week");
+  weekEl.innerHTML = "";
+  var t = today();
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date(); d.setDate(d.getDate() - i);
+    var k = d.toISOString().slice(0,10);
+    var day = S.days[k];
+    var dot = document.createElement("div");
+    if (k === t)              { dot.className = "wdot today"; dot.textContent = "\u2726"; }
+    else if (day && day.ok)   { dot.className = "wdot ok";    dot.textContent = "\u2713"; }
+    else                      { dot.className = "wdot empty"; dot.textContent = "\u00B7"; }
+    weekEl.appendChild(dot);
+  }
+
+  // Quote
+  var day = getDay(t);
+  var h   = new Date().getHours();
+  var pool = (day.m && day.e) ? QD : (h < 15 ? QM : QE);
+  document.getElementById("h-quote").textContent =
+    "\u00AB " + pool[Math.floor(Math.random() * pool.length)] + " \u00BB";
+
+  // Buttons
+  var mBtn  = document.getElementById("ri-m");
+  var mBdg  = document.getElementById("badge-m");
+  if (day.m) {
+    mBtn.className = "rbtn done";
+    mBdg.className = "rbtn-badge badge-done"; mBdg.textContent = "\u2713 Fait";
+  } else {
+    mBtn.className = "rbtn next";
+    mBdg.className = "rbtn-badge badge-next"; mBdg.textContent = "D\u00E9marrer";
+  }
+
+  var eBtn = document.getElementById("ri-e");
+  var eBdg = document.getElementById("badge-e");
+  if (day.e) {
+    eBtn.className = "rbtn done";
+    eBdg.className = "rbtn-badge badge-done"; eBdg.textContent = "\u2713 Fait";
+  } else {
+    eBtn.className = day.m ? "rbtn next" : "rbtn";
+    eBdg.className = "rbtn-badge badge-wait"; eBdg.textContent = "En attente";
+  }
+}
+
+function clickM() { var d = getDay(today()); if (!d.m) startRoutine("morning"); }
+function clickE() { var d = getDay(today()); if (!d.e) startRoutine("evening"); }
+function goHome() { show("home"); }
+
+// ── ROUTINE ENGINE ───────────────────────────────────
+var R = { type:"morning", idx:0, stat:[], pts:10, ti:null, left:0, paused:false, mok:false };
+
+function startRoutine(type) {
+  R = { type:type, idx:0, stat:[], pts:10, ti:null, left:0, paused:false, mok:false };
+  document.getElementById("r-title").textContent =
+    type === "morning" ? "Routine du matin" : "Routine du soir";
+  show("routine");
+  renderStep();
+}
+
+function renderStep() {
+  clearInterval(R.ti);
+  var s = STEPS[R.idx];
+
+  document.getElementById("r-info").textContent  = "Etape " + (R.idx+1) + " / " + STEPS.length;
+  document.getElementById("s-title").textContent  = s.name;
+  document.getElementById("s-desc").textContent   = s.desc;
+  document.getElementById("r-plabel").textContent = s.name;
+
+  // Progress dots
+  var pd = document.getElementById("r-pdots"); pd.innerHTML = "";
+  for (var i = 0; i < STEPS.length; i++) {
+    var dot = document.createElement("div");
+    var cls = "pd";
+    if      (i < R.idx && R.stat[i] === "skip") cls += " pd-skip";
+    else if (i < R.idx)                          cls += " pd-done";
+    else if (i === R.idx)                        cls += " pd-cur";
+    dot.className = cls;
+    pd.appendChild(dot);
+  }
+
+  // Quads
+  var qg = document.getElementById("quads");
+  if (s.quad) {
+    qg.style.display = "grid";
+    for (var j = 0; j < 2; j++) {
+      var qel = document.getElementById("q" + j);
+      qel.className = "q" + (j < s.qi ? " qd" : j === s.qi ? " qa" : "");
+    }
+  } else {
+    qg.style.display = "none";
+  }
+
+  // Manual vs timer
+  var mc   = document.getElementById("manual");
+  var bm   = document.getElementById("btn-main");
+  var twrp = document.getElementById("t-wrap");
+  bm.textContent = "Marquer termin\u00E9";
+  bm.className   = "btn-main";
+
+  if (s.manual) {
+    mc.style.display = "flex"; mc.classList.remove("ck"); R.mok = false;
+    twrp.style.display = "none";
+  } else {
+    mc.style.display   = "none";
+    twrp.style.display = "block";
+    startTimer(s.dur);
+  }
+}
+
+function startTimer(dur) {
+  R.left = dur; updateTimer();
+  R.ti = setInterval(function() {
+    if (R.paused) return;
+    R.left--;
+    updateTimer();
+    if (R.left <= 0) {
+      clearInterval(R.ti);
+      document.getElementById("t-fg").classList.add("ok");
+      document.getElementById("btn-main").textContent = "\u2713 Termin\u00E9 !";
+      document.getElementById("btn-main").className   = "btn-main ready";
+      if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  var s = STEPS[R.idx];
+  var t = Math.max(0, R.left);
+  document.getElementById("t-num").textContent = t;
+  var pct = s.dur > 0 ? (s.dur - t) / s.dur : 0;
+  document.getElementById("t-fg").style.strokeDashoffset = CIRC * (1 - pct);
+  document.getElementById("t-fg").classList.remove("ok");
+}
+
+function tapManual() {
+  R.mok = !R.mok;
+  var mc = document.getElementById("manual");
+  var bm = document.getElementById("btn-main");
+  mc.classList.toggle("ck", R.mok);
+  bm.textContent = R.mok ? "\u2713 Termin\u00E9 !" : "Marquer termin\u00E9";
+  bm.className   = R.mok ? "btn-main ready" : "btn-main";
+}
+
+function togglePause() {
+  R.paused = !R.paused;
+  document.getElementById("pause-ov").classList.toggle("on", R.paused);
+}
+
+function confirmQuit() {
+  if (confirm("Abandonner la routine en cours ?")) {
+    clearInterval(R.ti);
+    show("home");
+  }
+}
+
+function doNext() {
+  clearInterval(R.ti);
+  R.stat.push("done");
+  R.pts += STEPS[R.idx].pts;
+  advance();
+}
+function doSkip() {
+  clearInterval(R.ti);
+  R.stat.push("skip");
+  advance();
+}
+function advance() {
+  R.idx++;
+  if (R.idx >= STEPS.length) finishRoutine();
+  else renderStep();
+}
+
+// ── FINISH ───────────────────────────────────────────
+function finishRoutine() {
+  clearInterval(R.ti);
+  var t   = today();
+  var day = getDay(t);
+
+  if (R.type === "morning") day.m = true;
+  else                       day.e = true;
+
+  day.score = (day.score || 0) + R.pts;
+  if (day.m && day.e) { day.ok = true; R.pts += 20; day.score += 20; }
+  setDay(t, day);
+
+  S.xp += R.pts;
+  recalcStreak();
+  save();
+
+  // Render finish
+  document.getElementById("f-icon").textContent = getRank(S.xp).e;
+
+  var qpool = R.type === "morning"
+    ? ["Rituel matinal scelle. Le jour t'appartient.",
+       "Tes crocs du matin rayonnent de puissance."]
+    : ["La nuit t'appartient. Tes crocs sont prets.",
+       "Tes crocs brillent dans l'obscurite. Le clan s'incline.",
+       "Rituel vesperale accompli. La serie se poursuit."];
+  document.getElementById("f-quote").textContent =
+    qpool[Math.floor(Math.random() * qpool.length)];
+
+  document.getElementById("f-pts").textContent = "+" + R.pts;
+
+  // Dots
+  var fd = document.getElementById("f-dots"); fd.innerHTML = "";
+  var s  = Math.min(S.streak, 7);
+  for (var i = 0; i < s; i++) {
+    var dot = document.createElement("div");
+    dot.className = "f-dot " + (i === s-1 ? "today" : "ok");
+    dot.textContent = (i === s-1) ? "\u2726" : "\u2713";
+    fd.appendChild(dot);
+  }
+  document.getElementById("f-streak").textContent =
+    S.streak + " nuit" + (S.streak > 1 ? "s" : "") + " de suite \uD83D\uDD25";
+
+  show("finish");
+
+  // Milestones
+  for (var mi = 0; mi < MILES.length; mi++) {
+    var mv = MILES[mi];
+    if (S.streak === mv && S.miles.indexOf(mv) === -1) {
+      S.miles.push(mv); save();
+      (function(v) {
+        var M = {
+          3:  ["3 nuits consecutives !",  "Les inities t'admirent."],
+          7:  ["Une semaine !",            "7 nuits d'affile. Vampire Discipline."],
+          14: ["Deux semaines !",          "14 nuits. Le Gardien du Crepuscule s'incline."],
+          30: ["Un mois !",               "30 nuits. Le clan t'acclame."],
+          60: ["Deux mois !",             "60 nuits sans rupture. Tu transcendes."],
+          100:["100 nuits legendaires !","Tu es une legende absolue."]
+        };
+        var mx = M[v] || [v + " nuits !", "La serie continue..."];
+        setTimeout(function() { showMod("\uD83D\uDD25", mx[0], mx[1]); }, 1800);
+      })(mv);
+    }
+  }
+}
+
+// ── MODAL ────────────────────────────────────────────
+function showMod(icon, title, msg) {
+  document.getElementById("m-icon").textContent  = icon;
+  document.getElementById("m-title").textContent = title;
+  document.getElementById("m-msg").textContent   = msg;
+  document.getElementById("modal-ov").classList.add("on");
+}
+function closeMod() { document.getElementById("modal-ov").classList.remove("on"); }
+
+// ── BOOT ─────────────────────────────────────────────
+show("home");
+</script>
+</body>
+</html>
